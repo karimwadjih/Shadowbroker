@@ -8,10 +8,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - AISSTREAM_API_KEY=${AISSTREAM_API_KEY}
-      - N2YO_API_KEY=${N2YO_API_KEY}
-      - OPENSKY_USERNAME=${OPENSKY_USERNAME}
-      - OPENSKY_PASSWORD=${OPENSKY_PASSWORD}
+      - AIS_API_KEY=${AIS_API_KEY}
+      - OPENSKY_CLIENT_ID=${OPENSKY_CLIENT_ID}
+      - OPENSKY_CLIENT_SECRET=${OPENSKY_CLIENT_SECRET}
       - LTA_ACCOUNT_KEY=${LTA_ACCOUNT_KEY}
     volumes:
       - backend_data:/app/data

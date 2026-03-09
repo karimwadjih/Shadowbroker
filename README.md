@@ -17,7 +17,7 @@ Built with **Next.js**, **MapLibre GL**, **FastAPI**, and **Python**, it's desig
 ## Interesting Use Cases
 
 * Track private jets of billionaires
-* Monitor satellites passing overhead (finicky right now)
+* Monitor satellites passing overhead
 * Watch naval traffic worldwide
 * Detect GPS jamming zones
 * Follow earthquakes and disasters in real time
@@ -62,7 +62,7 @@ Open `http://localhost:3000` to view the dashboard! *(Requires Docker)*
 
 ### 🛰️ Space & Satellites
 
-* **Orbital Tracking** — Real-time satellite positions from N2YO API
+* **Orbital Tracking** — Real-time satellite positions via CelesTrak TLE data + SGP4 propagation (2,000+ active satellites, no API key required)
 * **Mission-Type Classification** — Color-coded by mission: military recon (red), SAR (cyan), SIGINT (white), navigation (blue), early warning (magenta), commercial imaging (green), space station (gold)
 
 ### 🌍 Geopolitics & Conflict
@@ -114,7 +114,7 @@ Open `http://localhost:3000` to view the dashboard! *(Requires Docker)*
 │  │ Map Render  │    │  Intel   │    │ Markets/Radio │  │
 │  └──────┬──────┘    └────┬─────┘    └───────┬───────┘  │
 │         └────────────────┼──────────────────┘          │
-│                          │ REST API (15s / 60s)        │
+│                          │ REST API (60s / 120s)       │
 ├──────────────────────────┼─────────────────────────────┤
 │                    BACKEND (FastAPI)                   │
 │                          │                             │
@@ -122,7 +122,7 @@ Open `http://localhost:3000` to view the dashboard! *(Requires Docker)*
 │  │               Data Fetcher (Scheduler)           │  │
 │  │                                                  │  │
 │  │  ┌──────────┬──────────┬──────────┬───────────┐  │  │
-│  │  │ OpenSky  │ adsb.lol │   N2YO   │   USGS    │  │  │
+│  │  │ OpenSky  │ adsb.lol │CelesTrak │   USGS    │  │  │
 │  │  │ Flights  │ Military │   Sats   │  Quakes   │  │  │
 │  │  ├──────────┼──────────┼──────────┼───────────┤  │  │
 │  │  │  AIS WS  │ Carrier  │  GDELT   │   CCTV    │  │  │
@@ -144,7 +144,7 @@ Open `http://localhost:3000` to view the dashboard! *(Requires Docker)*
 | [OpenSky Network](https://opensky-network.org) | Commercial & private flights | ~60s | Optional (anonymous limited) |
 | [adsb.lol](https://adsb.lol) | Military aircraft | ~60s | No |
 | [aisstream.io](https://aisstream.io) | AIS vessel positions | Real-time WebSocket | **Yes** |
-| [N2YO](https://www.n2yo.com) | Satellite orbital positions | ~60s | **Yes** |
+| [CelesTrak](https://celestrak.org) | Satellite orbital positions (TLE + SGP4) | ~60s | No |
 | [USGS Earthquake](https://earthquake.usgs.gov) | Global seismic events | ~60s | No |
 | [GDELT Project](https://www.gdeltproject.org) | Global conflict events | ~6h | No |
 | [DeepState Map](https://deepstatemap.live) | Ukraine frontline | ~30min | No |
@@ -177,9 +177,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - AISSTREAM_API_KEY=${AISSTREAM_API_KEY}
-      - N2YO_API_KEY=${N2YO_API_KEY}
-      # Add other required environment variables here
+      - AIS_API_KEY=${AIS_API_KEY}
+      - OPENSKY_CLIENT_ID=${OPENSKY_CLIENT_ID}
+      - OPENSKY_CLIENT_SECRET=${OPENSKY_CLIENT_SECRET}
     volumes:
       - backend_data:/app/data
     restart: unless-stopped
@@ -210,7 +210,7 @@ volumes:
 If you just want to run the dashboard without dealing with terminal commands:
 
 1. Go to the **[Releases](../../releases)** tab on the right side of this GitHub page.
-2. Download the `ShadowBroker_v0.2.zip` file.
+2. Download the `ShadowBroker_v0.3.zip` file.
 3. Extract the folder to your computer.
 4. **Windows:** Double-click `start.bat`.
    **Mac/Linux:** Open terminal, type `chmod +x start.sh`, and run `./start.sh`.
@@ -226,7 +226,7 @@ If you want to modify the code or run from source:
 
 * **Node.js** 18+ and **npm**
 * **Python** 3.10+ with `pip`
-* API keys for: `aisstream.io`, `n2yo.com` (and optionally `opensky-network.org`, `lta.gov.sg`)
+* API keys for: `aisstream.io` (required), and optionally `opensky-network.org` (OAuth2), `lta.gov.sg`
 
 ### Installation
 
@@ -243,10 +243,9 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 
 # Create .env with your API keys
-echo "AISSTREAM_API_KEY=your_key_here" >> .env
-echo "N2YO_API_KEY=your_key_here" >> .env
-echo "OPENSKY_USERNAME=your_user" >> .env
-echo "OPENSKY_PASSWORD=your_pass" >> .env
+echo "AIS_API_KEY=your_aisstream_key" >> .env
+echo "OPENSKY_CLIENT_ID=your_opensky_client_id" >> .env
+echo "OPENSKY_CLIENT_SECRET=your_opensky_secret" >> .env
 
 # Frontend setup
 cd ../frontend
@@ -355,13 +354,12 @@ Create a `.env` file in the `backend/` directory:
 
 ```env
 # Required
-AISSTREAM_API_KEY=your_aisstream_key      # Maritime vessel tracking
-N2YO_API_KEY=your_n2yo_key               # Satellite position data
+AIS_API_KEY=your_aisstream_key                # Maritime vessel tracking (aisstream.io)
 
 # Optional (enhances data quality)
-OPENSKY_CLIENT_ID=your_opensky_client_id  # Higher rate limits for flight data
-OPENSKY_CLIENT_SECRET=your_opensky_secret
-LTA_ACCOUNT_KEY=your_lta_key             # Singapore CCTV cameras
+OPENSKY_CLIENT_ID=your_opensky_client_id      # OAuth2 — higher rate limits for flight data
+OPENSKY_CLIENT_SECRET=your_opensky_secret     # OAuth2 — paired with Client ID above
+LTA_ACCOUNT_KEY=your_lta_key                  # Singapore CCTV cameras
 ```
 
 ---

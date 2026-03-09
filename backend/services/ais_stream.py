@@ -14,7 +14,7 @@ import os
 logger = logging.getLogger(__name__)
 
 AIS_WS_URL = "wss://stream.aisstream.io/v0/stream"
-API_KEY = os.environ.get("AIS_API_KEY", "75cc39af03c9cc23c90e8a7b3c3bc2b2a507c5fb")
+API_KEY = os.environ.get("AIS_API_KEY", "")
 
 # AIS vessel type code classification
 # See: https://coast.noaa.gov/data/marinecadastre/ais/VesselTypeCodes2018.pdf

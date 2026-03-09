@@ -64,3 +64,9 @@ rss_output.txt
 merged.txt
 tmp_fast.json
 TheAirTraffic Database.xlsx
+
+# Debug dumps & release artifacts
+backend/dump.json
+backend/debug_fast.json
+*.zip
+.git_backup/
