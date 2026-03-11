@@ -11,17 +11,20 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-// Hop-by-hop headers that must not be forwarded to the backend.
-const HOP_BY_HOP = new Set([
-  "connection",
-  "keep-alive",
-  "proxy-authenticate",
-  "proxy-authorization",
-  "te",
-  "trailers",
-  "transfer-encoding",
-  "upgrade",
-  "host",
+// Headers that must not be forwarded to the backend.
+const STRIP_REQUEST = new Set([
+  "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
+  "te", "trailers", "transfer-encoding", "upgrade", "host",
+]);
+
+// Headers that must not be forwarded back to the browser.
+// content-encoding and content-length are stripped because Node.js fetch()
+// automatically decompresses gzip/br responses — forwarding these headers
+// would cause ERR_CONTENT_DECODING_FAILED in the browser.
+const STRIP_RESPONSE = new Set([
+  "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
+  "te", "trailers", "transfer-encoding", "upgrade",
+  "content-encoding", "content-length",
 ]);
 
 async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
@@ -29,28 +32,37 @@ async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
   const targetUrl = new URL(`/api/${path.join("/")}`, backendUrl);
   targetUrl.search = req.nextUrl.search;
 
-  // Forward relevant request headers (strip hop-by-hop)
+  // Forward relevant request headers
   const forwardHeaders = new Headers();
   req.headers.forEach((value, key) => {
-    if (!HOP_BY_HOP.has(key.toLowerCase())) {
+    if (!STRIP_REQUEST.has(key.toLowerCase())) {
       forwardHeaders.set(key, value);
     }
   });
 
   const isBodyless = req.method === "GET" || req.method === "HEAD";
-  const upstream = await fetch(targetUrl.toString(), {
-    method: req.method,
-    headers: forwardHeaders,
-    body: isBodyless ? undefined : req.body,
-    // Required for streaming request bodies in Node.js fetch
-    // @ts-ignore
-    duplex: "half",
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetch(targetUrl.toString(), {
+      method: req.method,
+      headers: forwardHeaders,
+      body: isBodyless ? undefined : req.body,
+      // Required for streaming request bodies in Node.js fetch
+      // @ts-ignore
+      duplex: "half",
+    });
+  } catch (err) {
+    // Backend unreachable — return a clean 502 so the UI can handle it gracefully
+    return new NextResponse(JSON.stringify({ error: "Backend unavailable" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  // Forward response headers (strip hop-by-hop)
+  // Forward response headers
   const responseHeaders = new Headers();
   upstream.headers.forEach((value, key) => {
-    if (!HOP_BY_HOP.has(key.toLowerCase())) {
+    if (!STRIP_RESPONSE.has(key.toLowerCase())) {
       responseHeaders.set(key, value);
     }
   });
