@@ -138,3 +138,342 @@ export default function Dashboard() {
     private: true,
     jets: true,
     military: true,
+    tracked: true,
+    satellites: true,
+    ships_military: true,
+    ships_cargo: true,
+    ships_civilian: false,
+    ships_passenger: true,
+    ships_tracked_yachts: true,
+    earthquakes: true,
+    cctv: false,
+    ukraine_frontline: true,
+    global_incidents: true,
+    day_night: true,
+    gps_jamming: true,
+    gibs_imagery: false,
+    highres_satellite: false,
+    kiwisdr: false,
+    firms: false,
+    internet_outages: false,
+    datacenters: false,
+    military_bases: false,
+  });
+
+  const [gibsDate, setGibsDate] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().slice(0, 10);
+  });
+  const [gibsOpacity, setGibsOpacity] = useState(0.6);
+
+  const [effects, setEffects] = useState({
+    bloom: true,
+  });
+
+  const [activeStyle, setActiveStyle] = useState('DEFAULT');
+  const stylesList = ['DEFAULT', 'SATELLITE'];
+
+  const cycleStyle = () => {
+    setActiveStyle((prev) => {
+      const idx = stylesList.indexOf(prev);
+      const next = stylesList[(idx + 1) % stylesList.length];
+      setActiveLayers((l) => ({ ...l, highres_satellite: next === 'SATELLITE' }));
+      return next;
+    });
+  };
+
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+  const [flyToLocation, setFlyToLocation] = useState<{ lat: number, lng: number, ts: number } | null>(null);
+
+  const [isEavesdropping, setIsEavesdropping] = useState(false);
+  const [eavesdropLocation, setEavesdropLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [cameraCenter, setCameraCenter] = useState<{ lat: number, lng: number } | null>(null);
+
+  const { showOnboarding, setShowOnboarding } = useOnboarding();
+  const { showChangelog, setShowChangelog } = useChangelog();
+
+  return (
+    <DashboardDataProvider data={data} selectedEntity={selectedEntity} setSelectedEntity={setSelectedEntity}>
+    <main className="fixed inset-0 w-full h-full bg-[var(--bg-primary)] overflow-hidden font-sans">
+
+      <ErrorBoundary name="Map">
+        <MaplibreViewer
+          data={data}
+          activeLayers={activeLayers}
+          activeFilters={activeFilters}
+          effects={{ ...effects, bloom: effects.bloom && activeStyle !== 'DEFAULT', style: activeStyle }}
+          onEntityClick={setSelectedEntity}
+          selectedEntity={selectedEntity}
+          flyToLocation={flyToLocation}
+          gibsDate={gibsDate}
+          gibsOpacity={gibsOpacity}
+          isEavesdropping={isEavesdropping}
+          onEavesdropClick={setEavesdropLocation}
+          onCameraMove={setCameraCenter}
+          onMouseCoords={handleMouseCoords}
+          onRightClick={handleMapRightClick}
+          regionDossier={regionDossier}
+          regionDossierLoading={regionDossierLoading}
+          onViewStateChange={setMapView}
+          measureMode={measureMode}
+          onMeasureClick={(pt: { lat: number; lng: number }) => {
+            setMeasurePoints(prev => prev.length >= 3 ? prev : [...prev, pt]);
+          }}
+          measurePoints={measurePoints}
+          trackedSdr={trackedSdr}
+          setTrackedSdr={setTrackedSdr}
+        />
+      </ErrorBoundary>
+
+      {uiVisible && (
+        <>
+          {/* ARCTERA HEADER */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute top-6 left-6 z-[200] pointer-events-none flex items-center gap-4 hud-zone"
+          >
+            <div className="w-8 h-8 flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full relative flex items-center justify-center" style={{ border: '1px solid #D4622A' }}>
+                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'rgba(212,98,42,0.3)' }}></div>
+                <div className="absolute top-[-2px] bottom-[-2px] w-[1px]" style={{ backgroundColor: '#D4622A' }}></div>
+                <div className="absolute left-[-2px] right-[-2px] h-[1px]" style={{ backgroundColor: '#D4622A' }}></div>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-2xl font-bold tracking-[0.4em] text-[var(--text-primary)] flex items-center gap-3" style={{ fontFamily: 'monospace' }}>
+                A R C T E R A
+              </h1>
+              <span className="text-[9px] font-mono tracking-[0.3em] mt-1 ml-1" style={{ color: '#D4622A' }}>GLOBAL INTELLIGENCE SURFACE</span>
+            </div>
+          </motion.div>
+
+          {/* SYSTEM METRICS TOP LEFT */}
+          <div className="absolute top-2 left-6 text-[8px] font-mono tracking-widest z-[200] pointer-events-none hud-zone" style={{ color: 'rgba(212,98,42,0.5)' }}>
+            OPTIC VIS:113  SRC:180  DENS:1.42  0.8ms
+          </div>
+
+          {/* SYSTEM METRICS TOP RIGHT */}
+          <div className="absolute top-2 right-6 text-[9px] flex flex-col items-end font-mono tracking-widest text-[var(--text-muted)] z-[200] pointer-events-none hud-zone">
+            <div>RTX</div>
+            <div>VSR</div>
+          </div>
+
+          {/* LEFT HUD CONTAINER */}
+          <motion.div
+            className="absolute left-6 top-24 bottom-6 w-80 flex flex-col gap-6 z-[200] pointer-events-none hud-zone"
+            animate={{ x: leftOpen ? 0 : -360 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 250 }}
+          >
+            <ErrorBoundary name="WorldviewLeftPanel">
+              <WorldviewLeftPanel data={data} activeLayers={activeLayers} setActiveLayers={setActiveLayers} onSettingsClick={() => setSettingsOpen(true)} onLegendClick={() => setLegendOpen(true)} gibsDate={gibsDate} setGibsDate={setGibsDate} gibsOpacity={gibsOpacity} setGibsOpacity={setGibsOpacity} onEntityClick={setSelectedEntity} onFlyTo={(lat, lng) => setFlyToLocation({ lat, lng, ts: Date.now() })} trackedSdr={trackedSdr} setTrackedSdr={setTrackedSdr} />
+            </ErrorBoundary>
+          </motion.div>
+
+          {/* LEFT SIDEBAR TOGGLE TAB */}
+          <motion.div
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-[201] pointer-events-auto hud-zone"
+            animate={{ x: leftOpen ? 344 : 0 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 250 }}
+          >
+            <button
+              onClick={() => setLeftOpen(!leftOpen)}
+              className="flex flex-col items-center gap-1.5 py-5 px-1.5 border border-l-0 rounded-r-md text-white hover:opacity-80 transition-colors shadow-[2px_0_12px_rgba(0,0,0,0.4)]"
+              style={{ backgroundColor: '#D4622A', borderColor: '#D4622A' }}
+            >
+              {leftOpen ? <ChevronLeft size={10} /> : <ChevronRight size={10} />}
+              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-white" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>LAYERS</span>
+            </button>
+          </motion.div>
+
+          {/* RIGHT SIDEBAR TOGGLE TAB */}
+          <motion.div
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-[201] pointer-events-auto hud-zone"
+            animate={{ x: rightOpen ? -344 : 0 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 250 }}
+          >
+            <button
+              onClick={() => setRightOpen(!rightOpen)}
+              className="flex flex-col items-center gap-1.5 py-5 px-1.5 border border-r-0 rounded-l-md text-white hover:opacity-80 transition-colors shadow-[-2px_0_12px_rgba(0,0,0,0.4)]"
+              style={{ backgroundColor: '#D4622A', borderColor: '#D4622A' }}
+            >
+              {rightOpen ? <ChevronRight size={10} /> : <ChevronLeft size={10} />}
+              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-white" style={{ writingMode: 'vertical-rl' }}>INTEL</span>
+            </button>
+          </motion.div>
+
+          {/* RIGHT HUD CONTAINER */}
+          <motion.div
+            className="absolute right-6 top-24 bottom-6 w-80 flex flex-col gap-4 z-[200] pointer-events-auto overflow-y-auto styled-scrollbar pr-2 hud-zone"
+            animate={{ x: rightOpen ? 0 : 360 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 250 }}
+          >
+            <TopRightControls />
+
+            <div className="flex-shrink-0">
+              <FindLocateBar
+                data={data}
+                onLocate={(lat, lng, entityId, entityType) => {
+                  setFlyToLocation({ lat, lng, ts: Date.now() });
+                }}
+                onFilter={(filterKey, value) => {
+                  setActiveFilters(prev => {
+                    const current = prev[filterKey] || [];
+                    if (!current.includes(value)) {
+                      return { ...prev, [filterKey]: [...current, value] };
+                    }
+                    return prev;
+                  });
+                }}
+              />
+            </div>
+
+            <div className="flex-shrink-0">
+              <ErrorBoundary name="MarketsPanel">
+                <MarketsPanel data={data} />
+              </ErrorBoundary>
+            </div>
+
+            <div className="flex-shrink-0">
+              <ErrorBoundary name="RadioInterceptPanel">
+                <RadioInterceptPanel
+                  data={data}
+                  isEavesdropping={isEavesdropping}
+                  setIsEavesdropping={setIsEavesdropping}
+                  eavesdropLocation={eavesdropLocation}
+                  cameraCenter={cameraCenter}
+                  selectedEntity={selectedEntity}
+                />
+              </ErrorBoundary>
+            </div>
+
+            <div className="flex-shrink-0">
+              <ErrorBoundary name="FilterPanel">
+                <FilterPanel data={data} activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
+              </ErrorBoundary>
+            </div>
+
+            <div className="flex-1 min-h-0 flex flex-col">
+              <ErrorBoundary name="NewsFeed">
+                <NewsFeed data={data} selectedEntity={selectedEntity} regionDossier={regionDossier} regionDossierLoading={regionDossierLoading} />
+              </ErrorBoundary>
+            </div>
+          </motion.div>
+
+          {!(selectedEntity?.type === 'region_dossier' && regionDossier?.sentinel2) && <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 1 }}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[200] pointer-events-auto flex flex-col items-center gap-2 hud-zone"
+          >
+            <LocateBar onLocate={(lat, lng) => setFlyToLocation({ lat, lng, ts: Date.now() })} />
+
+            <div
+              className="bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded-xl px-6 py-2.5 flex items-center gap-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] cursor-pointer"
+              style={{ borderBottom: '2px solid rgba(212,98,42,0.4)' }}
+              onClick={cycleStyle}
+            >
+              <div className="flex flex-col items-center min-w-[120px]">
+                <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">COORDINATES</div>
+                <div className="text-[11px] font-mono font-bold tracking-wide" style={{ color: '#D4622A' }}>
+                  {mouseCoords ? `${mouseCoords.lat.toFixed(4)}, ${mouseCoords.lng.toFixed(4)}` : '0.0000, 0.0000'}
+                </div>
+              </div>
+
+              <div className="w-px h-8 bg-[var(--border-primary)]" />
+
+              <div className="flex flex-col items-center min-w-[180px] max-w-[320px]">
+                <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">LOCATION</div>
+                <div className="text-[10px] text-[var(--text-secondary)] font-mono truncate max-w-[320px]">
+                  {locationLabel || 'Hover over map...'}
+                </div>
+              </div>
+
+              <div className="w-px h-8 bg-[var(--border-primary)]" />
+
+              <div className="flex flex-col items-center">
+                <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">STYLE</div>
+                <div className="text-[11px] font-mono font-bold" style={{ color: '#D4622A' }}>{activeStyle}</div>
+              </div>
+
+              <div className="w-px h-8 bg-[var(--border-primary)]" />
+
+              <div className="flex flex-col items-center" title={`Kp Index: ${data?.space_weather?.kp_index ?? 'N/A'}`}>
+                <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">SOLAR</div>
+                <div className={`text-[11px] font-mono font-bold ${
+                  (data?.space_weather?.kp_index ?? 0) >= 5 ? 'text-red-400' :
+                  (data?.space_weather?.kp_index ?? 0) >= 4 ? 'text-yellow-400' :
+                  'text-green-400'
+                }`}>
+                  {data?.space_weather?.kp_text || 'N/A'}
+                </div>
+              </div>
+            </div>
+          </motion.div>}
+        </>
+      )}
+
+      {!uiVisible && (
+        <button
+          onClick={() => setUiVisible(true)}
+          className="absolute bottom-6 right-6 z-[200] bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded px-4 py-2 text-[10px] font-mono tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-muted)] transition-colors pointer-events-auto"
+        >
+          RESTORE UI
+        </button>
+      )}
+
+      <div className="absolute bottom-[5.5rem] left-[26rem] z-[201] pointer-events-auto">
+        <ScaleBar
+          zoom={mapView.zoom}
+          latitude={mapView.latitude}
+          measureMode={measureMode}
+          measurePoints={measurePoints}
+          onToggleMeasure={() => {
+            setMeasureMode(m => !m);
+            if (measureMode) setMeasurePoints([]);
+          }}
+          onClearMeasure={() => setMeasurePoints([])}
+        />
+      </div>
+
+      <div className="absolute inset-0 pointer-events-none z-[2]"
+        style={{
+          background: 'radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%)'
+        }}
+      />
+
+      <div className="absolute inset-0 pointer-events-none z-[3] opacity-5 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px)]" style={{ backgroundSize: '100% 4px' }}></div>
+
+      <ErrorBoundary name="SettingsPanel">
+        <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      </ErrorBoundary>
+
+      <ErrorBoundary name="MapLegend">
+        <MapLegend isOpen={legendOpen} onClose={() => setLegendOpen(false)} />
+      </ErrorBoundary>
+
+      {showOnboarding && (
+        <OnboardingModal
+          onClose={() => setShowOnboarding(false)}
+          onOpenSettings={() => { setShowOnboarding(false); setSettingsOpen(true); }}
+        />
+      )}
+
+      {!showOnboarding && showChangelog && (
+        <ChangelogModal onClose={() => setShowChangelog(false)} />
+      )}
+
+      {backendStatus === 'disconnected' && (
+        <div className="absolute top-0 left-0 right-0 z-[9000] flex items-center justify-center py-2 bg-red-950/90 border-b border-red-500/40 backdrop-blur-sm">
+          <span className="text-[10px] font-mono tracking-widest text-red-400">
+            BACKEND OFFLINE — Cannot reach backend server. Check that the backend container is running and BACKEND_URL is correct.
+          </span>
+        </div>
+      )}
+
+    </main>
+    </DashboardDataProvider>
+  );
+}
