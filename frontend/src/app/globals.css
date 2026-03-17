@@ -2,38 +2,38 @@
 
 :root {
   --background: #000000;
-  --foreground: #F5F0E8;
+  --foreground: #ededed;
   --bg-primary: #000000;
   --bg-secondary: rgb(5, 5, 8);
   --bg-tertiary: rgb(12, 12, 16);
   --bg-panel: rgba(0, 0, 0, 0.85);
   --border-primary: rgb(10, 12, 15);
   --border-secondary: rgb(20, 24, 28);
-  --text-primary: #F5F0E8;
-  --text-secondary: #D4622A;
-  --text-muted: #a34d22;
-  --text-heading: #F5F0E8;
-  --hover-accent: rgba(212, 98, 42, 0.15);
-  --scrollbar-thumb: rgba(212, 98, 42, 0.3);
-  --scrollbar-thumb-hover: rgba(212, 98, 42, 0.5);
+  --text-primary: rgb(243, 244, 246);
+  --text-secondary: rgb(34, 211, 238);
+  --text-muted: rgb(8, 145, 178);
+  --text-heading: rgb(236, 254, 255);
+  --hover-accent: rgba(8, 51, 68, 0.2);
+  --scrollbar-thumb: rgba(8, 145, 178, 0.3);
+  --scrollbar-thumb-hover: rgba(8, 145, 178, 0.5);
 }
 
 [data-theme="light"] {
   --background: #000000;
-  --foreground: #F5F0E8;
+  --foreground: #ededed;
   --bg-primary: #000000;
   --bg-secondary: rgb(5, 5, 8);
   --bg-tertiary: rgb(12, 12, 16);
   --bg-panel: rgba(0, 0, 0, 0.85);
   --border-primary: rgb(10, 12, 15);
   --border-secondary: rgb(20, 24, 28);
-  --text-primary: #F5F0E8;
-  --text-secondary: #D4622A;
-  --text-muted: #a34d22;
-  --text-heading: #F5F0E8;
-  --hover-accent: rgba(212, 98, 42, 0.15);
-  --scrollbar-thumb: rgba(212, 98, 42, 0.3);
-  --scrollbar-thumb-hover: rgba(212, 98, 42, 0.5);
+  --text-primary: rgb(243, 244, 246);
+  --text-secondary: rgb(34, 211, 238);
+  --text-muted: rgb(8, 145, 178);
+  --text-heading: rgb(236, 254, 255);
+  --hover-accent: rgba(8, 51, 68, 0.2);
+  --scrollbar-thumb: rgba(8, 145, 178, 0.3);
+  --scrollbar-thumb-hover: rgba(8, 145, 178, 0.5);
 }
 
 @theme inline {
@@ -49,7 +49,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Styled thin scrollbar for dark HUD UI */
 .styled-scrollbar::-webkit-scrollbar {
   width: 5px;
 }
@@ -71,12 +70,11 @@ body {
   scrollbar-width: thin;
 }
 
-/* Map popup shared utilities */
 .map-popup {
   background: rgba(10, 14, 26, 0.95);
   border-radius: 6px;
   padding: 10px 14px;
-  color: #F5F0E8;
+  color: #e0e6f0;
   font-family: monospace;
   font-size: 11px;
   min-width: 220px;
@@ -101,7 +99,6 @@ body {
   text-transform: uppercase;
 }
 
-/* MapLibre Popup Overrides */
 .maplibregl-popup-content {
   background: transparent !important;
   border: none !important;
@@ -113,61 +110,6 @@ body {
   display: none !important;
 }
 
-/* ── ARCTERA COLOR THEME ── global cyan → coral override */
-.hud-zone .text-cyan-300 { color: #e8845a !important; }
-.hud-zone .text-cyan-400 { color: #D4622A !important; }
-.hud-zone .text-cyan-500 { color: #b85424 !important; }
-.hud-zone .text-cyan-600 { color: #a34d22 !important; }
-.hud-zone .text-cyan-700 { color: #8a3e1a !important; }
-.hud-zone .text-cyan-500\/50 { color: rgba(184, 84, 36, 0.5) !important; }
-.hud-zone .text-cyan-500\/70 { color: rgba(184, 84, 36, 0.7) !important; }
-.hud-zone .text-cyan-500\/80 { color: rgba(184, 84, 36, 0.8) !important; }
-
-.hud-zone .bg-cyan-400 { background-color: #D4622A !important; }
-.hud-zone .bg-cyan-300 { background-color: #e8845a !important; }
-.hud-zone .bg-cyan-500 { background-color: #b85424 !important; }
-.hud-zone .bg-cyan-500\/10 { background-color: rgba(212, 98, 42, 0.1) !important; }
-.hud-zone .bg-cyan-500\/20 { background-color: rgba(212, 98, 42, 0.2) !important; }
-.hud-zone .bg-cyan-500\/30 { background-color: rgba(212, 98, 42, 0.3) !important; }
-.hud-zone .bg-cyan-900\/30 { background-color: rgba(80, 30, 10, 0.3) !important; }
-.hud-zone .bg-cyan-900\/50 { background-color: rgba(80, 30, 10, 0.5) !important; }
-.hud-zone .bg-cyan-900\/60 { background-color: rgba(80, 30, 10, 0.6) !important; }
-.hud-zone .bg-cyan-950\/10 { background-color: rgba(50, 15, 5, 0.1) !important; }
-.hud-zone .bg-cyan-950\/30 { background-color: rgba(50, 15, 5, 0.3) !important; }
-.hud-zone .bg-cyan-950\/40 { background-color: rgba(50, 15, 5, 0.4) !important; }
-
-.hud-zone .border-cyan-400 { border-color: #D4622A !important; }
-.hud-zone .border-cyan-500 { border-color: #b85424 !important; }
-.hud-zone .border-cyan-700 { border-color: #8a3e1a !important; }
-.hud-zone .border-cyan-800 { border-color: #6b2f12 !important; }
-.hud-zone .border-cyan-900 { border-color: #4a1f0a !important; }
-.hud-zone .border-cyan-500\/10 { border-color: rgba(212, 98, 42, 0.1) !important; }
-.hud-zone .border-cyan-500\/20 { border-color: rgba(212, 98, 42, 0.2) !important; }
-.hud-zone .border-cyan-500\/30 { border-color: rgba(212, 98, 42, 0.3) !important; }
-.hud-zone .border-cyan-500\/40 { border-color: rgba(212, 98, 42, 0.4) !important; }
-.hud-zone .border-cyan-500\/50 { border-color: rgba(212, 98, 42, 0.5) !important; }
-.hud-zone .border-cyan-800\/40 { border-color: rgba(107, 47, 18, 0.4) !important; }
-.hud-zone .border-cyan-800\/50 { border-color: rgba(107, 47, 18, 0.5) !important; }
-.hud-zone .border-cyan-800\/60 { border-color: rgba(107, 47, 18, 0.6) !important; }
-.hud-zone .border-cyan-900\/50 { border-color: rgba(74, 31, 10, 0.5) !important; }
-.hud-zone .border-b-cyan-900 { border-bottom-color: #4a1f0a !important; }
-.hud-zone .border-l-cyan-500 { border-left-color: #b85424 !important; }
-
-.hud-zone .hover\:text-cyan-300:hover { color: #e8845a !important; }
-.hud-zone .hover\:text-cyan-400:hover { color: #D4622A !important; }
-.hud-zone .hover\:bg-cyan-300:hover { background-color: #e8845a !important; }
-.hud-zone .hover\:bg-cyan-500\/20:hover { background-color: rgba(212, 98, 42, 0.2) !important; }
-.hud-zone .hover\:bg-cyan-900\/50:hover { background-color: rgba(80, 30, 10, 0.5) !important; }
-.hud-zone .hover\:bg-cyan-950\/30:hover { background-color: rgba(50, 15, 5, 0.3) !important; }
-.hud-zone .hover\:border-cyan-300:hover { border-color: #e8845a !important; }
-.hud-zone .hover\:border-cyan-500:hover { border-color: #b85424 !important; }
-.hud-zone .hover\:border-cyan-500\/40:hover { border-color: rgba(212, 98, 42, 0.4) !important; }
-.hud-zone .hover\:border-cyan-500\/50:hover { border-color: rgba(212, 98, 42, 0.5) !important; }
-.hud-zone .hover\:border-cyan-600:hover { border-color: #a34d22 !important; }
-.hud-zone .hover\:border-cyan-800:hover { border-color: #6b2f12 !important; }
-.hud-zone .accent-cyan-500 { accent-color: #D4622A !important; }
-
-/* ── MATRIX HUD COLOR THEME ── */
 [data-hud="matrix"] .hud-zone {
   --text-secondary: #4ade80;
   --text-muted: #16a34a;
