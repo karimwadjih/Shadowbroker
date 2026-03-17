@@ -78,7 +78,7 @@ function LocateBar({ onLocate }: { onLocate: (lat: number, lng: number) => void 
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded-lg px-3 py-1.5 text-[9px] font-mono tracking-[0.15em] text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--text-muted)] transition-colors"
+        className="flex items-center gap-1.5 bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded-lg px-3 py-1.5 text-[9px] font-mono tracking-[0.15em] text-[var(--text-muted)] hover:text-cyan-400 hover:border-cyan-800 transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         LOCATE
@@ -88,8 +88,8 @@ function LocateBar({ onLocate }: { onLocate: (lat: number, lng: number) => void 
 
   return (
     <div className="relative w-[420px]">
-      <div className="flex items-center gap-2 bg-[var(--bg-primary)]/80 backdrop-blur-md border border-[var(--text-muted)]/60 rounded-lg px-3 py-2 shadow-[0_0_20px_rgba(212,98,42,0.1)]">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-secondary)] flex-shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <div className="flex items-center gap-2 bg-[var(--bg-primary)]/80 backdrop-blur-md border border-cyan-800/60 rounded-lg px-3 py-2 shadow-[0_0_20px_rgba(0,255,255,0.1)]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-500 flex-shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input
           ref={inputRef}
           value={value}
@@ -98,7 +98,7 @@ function LocateBar({ onLocate }: { onLocate: (lat: number, lng: number) => void 
           placeholder="Enter coordinates (31.8, 34.8) or place name..."
           className="flex-1 bg-transparent text-[10px] text-[var(--text-primary)] font-mono tracking-wider outline-none placeholder:text-[var(--text-muted)]"
         />
-        {loading && <div className="w-3 h-3 border border-[var(--text-secondary)] border-t-transparent rounded-full animate-spin" />}
+        {loading && <div className="w-3 h-3 border border-cyan-500 border-t-transparent rounded-full animate-spin" />}
         <button onClick={() => { setOpen(false); setValue(''); setResults([]); }} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
@@ -106,8 +106,8 @@ function LocateBar({ onLocate }: { onLocate: (lat: number, lng: number) => void 
       {results.length > 0 && (
         <div className="absolute bottom-full left-0 right-0 mb-1 bg-[var(--bg-secondary)]/95 backdrop-blur-md border border-[var(--border-primary)] rounded-lg overflow-hidden shadow-[0_-8px_30px_rgba(0,0,0,0.4)] max-h-[200px] overflow-y-auto styled-scrollbar">
           {results.map((r, i) => (
-            <button key={i} onClick={() => handleSelect(r)} className="w-full text-left px-3 py-2 hover:bg-[var(--hover-accent)] transition-colors border-b border-[var(--border-primary)]/50 last:border-0 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-secondary)] flex-shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <button key={i} onClick={() => handleSelect(r)} className="w-full text-left px-3 py-2 hover:bg-cyan-950/40 transition-colors border-b border-[var(--border-primary)]/50 last:border-0 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-500 flex-shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               <span className="text-[9px] text-[var(--text-secondary)] font-mono truncate">{r.label}</span>
             </button>
           ))}
@@ -228,7 +228,7 @@ export default function Dashboard() {
 
       {uiVisible && (
         <>
-          {/* ARCTERA HEADER */}
+          {/* WORLDVIEW HEADER */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -236,22 +236,22 @@ export default function Dashboard() {
             className="absolute top-6 left-6 z-[200] pointer-events-none flex items-center gap-4 hud-zone"
           >
             <div className="w-8 h-8 flex items-center justify-center">
-              <div className="w-6 h-6 rounded-full relative flex items-center justify-center" style={{ border: '1px solid #D4622A' }}>
-                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: 'rgba(212,98,42,0.3)' }}></div>
-                <div className="absolute top-[-2px] bottom-[-2px] w-[1px]" style={{ backgroundColor: '#D4622A' }}></div>
-                <div className="absolute left-[-2px] right-[-2px] h-[1px]" style={{ backgroundColor: '#D4622A' }}></div>
+              <div className="w-6 h-6 rounded-full border border-cyan-500 relative flex items-center justify-center">
+                <div className="w-4 h-4 rounded-full bg-cyan-500/30"></div>
+                <div className="absolute top-[-2px] bottom-[-2px] w-[1px] bg-cyan-500"></div>
+                <div className="absolute left-[-2px] right-[-2px] h-[1px] bg-cyan-500"></div>
               </div>
             </div>
             <div className="flex flex-col">
               <h1 className="text-2xl font-bold tracking-[0.4em] text-[var(--text-primary)] flex items-center gap-3" style={{ fontFamily: 'monospace' }}>
                 A R C T E R A
               </h1>
-              <span className="text-[9px] font-mono tracking-[0.3em] mt-1 ml-1" style={{ color: '#D4622A' }}>GLOBAL INTELLIGENCE SURFACE</span>
+              <span className="text-[9px] text-[var(--text-muted)] font-mono tracking-[0.3em] mt-1 ml-1">GLOBAL INTELLIGENCE SURFACE</span>
             </div>
           </motion.div>
 
           {/* SYSTEM METRICS TOP LEFT */}
-          <div className="absolute top-2 left-6 text-[8px] font-mono tracking-widest z-[200] pointer-events-none hud-zone" style={{ color: 'rgba(212,98,42,0.5)' }}>
+          <div className="absolute top-2 left-6 text-[8px] font-mono tracking-widest text-cyan-500/50 z-[200] pointer-events-none hud-zone">
             OPTIC VIS:113  SRC:180  DENS:1.42  0.8ms
           </div>
 
@@ -280,11 +280,10 @@ export default function Dashboard() {
           >
             <button
               onClick={() => setLeftOpen(!leftOpen)}
-              className="flex flex-col items-center gap-1.5 py-5 px-1.5 border border-l-0 rounded-r-md text-white hover:opacity-80 transition-colors shadow-[2px_0_12px_rgba(0,0,0,0.4)]"
-              style={{ backgroundColor: '#D4622A', borderColor: '#D4622A' }}
+              className="flex flex-col items-center gap-1.5 py-5 px-1.5 bg-cyan-400 border border-cyan-400 border-l-0 rounded-r-md text-black hover:bg-cyan-300 hover:border-cyan-300 transition-colors shadow-[2px_0_12px_rgba(0,0,0,0.4)]"
             >
               {leftOpen ? <ChevronLeft size={10} /> : <ChevronRight size={10} />}
-              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-white" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>LAYERS</span>
+              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-black" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>LAYERS</span>
             </button>
           </motion.div>
 
@@ -296,11 +295,10 @@ export default function Dashboard() {
           >
             <button
               onClick={() => setRightOpen(!rightOpen)}
-              className="flex flex-col items-center gap-1.5 py-5 px-1.5 border border-r-0 rounded-l-md text-white hover:opacity-80 transition-colors shadow-[-2px_0_12px_rgba(0,0,0,0.4)]"
-              style={{ backgroundColor: '#D4622A', borderColor: '#D4622A' }}
+              className="flex flex-col items-center gap-1.5 py-5 px-1.5 bg-cyan-400 border border-cyan-400 border-r-0 rounded-l-md text-black hover:bg-cyan-300 hover:border-cyan-300 transition-colors shadow-[-2px_0_12px_rgba(0,0,0,0.4)]"
             >
               {rightOpen ? <ChevronRight size={10} /> : <ChevronLeft size={10} />}
-              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-white" style={{ writingMode: 'vertical-rl' }}>INTEL</span>
+              <span className="text-[7px] font-mono tracking-[0.2em] font-bold text-black" style={{ writingMode: 'vertical-rl' }}>INTEL</span>
             </button>
           </motion.div>
 
@@ -371,13 +369,12 @@ export default function Dashboard() {
             <LocateBar onLocate={(lat, lng) => setFlyToLocation({ lat, lng, ts: Date.now() })} />
 
             <div
-              className="bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded-xl px-6 py-2.5 flex items-center gap-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] cursor-pointer"
-              style={{ borderBottom: '2px solid rgba(212,98,42,0.4)' }}
+              className="bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded-xl px-6 py-2.5 flex items-center gap-6 shadow-[0_4px_30px_rgba(0,0,0,0.2)] border-b-2 border-b-cyan-900 cursor-pointer"
               onClick={cycleStyle}
             >
               <div className="flex flex-col items-center min-w-[120px]">
                 <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">COORDINATES</div>
-                <div className="text-[11px] font-mono font-bold tracking-wide" style={{ color: '#D4622A' }}>
+                <div className="text-[11px] text-cyan-400 font-mono font-bold tracking-wide">
                   {mouseCoords ? `${mouseCoords.lat.toFixed(4)}, ${mouseCoords.lng.toFixed(4)}` : '0.0000, 0.0000'}
                 </div>
               </div>
@@ -395,7 +392,7 @@ export default function Dashboard() {
 
               <div className="flex flex-col items-center">
                 <div className="text-[8px] text-[var(--text-muted)] font-mono tracking-[0.2em]">STYLE</div>
-                <div className="text-[11px] font-mono font-bold" style={{ color: '#D4622A' }}>{activeStyle}</div>
+                <div className="text-[11px] text-cyan-400 font-mono font-bold">{activeStyle}</div>
               </div>
 
               <div className="w-px h-8 bg-[var(--border-primary)]" />
@@ -418,7 +415,7 @@ export default function Dashboard() {
       {!uiVisible && (
         <button
           onClick={() => setUiVisible(true)}
-          className="absolute bottom-6 right-6 z-[200] bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded px-4 py-2 text-[10px] font-mono tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-muted)] transition-colors pointer-events-auto"
+          className="absolute bottom-6 right-6 z-[200] bg-[var(--bg-primary)]/60 backdrop-blur-md border border-[var(--border-primary)] rounded px-4 py-2 text-[10px] font-mono tracking-widest text-cyan-500 hover:text-cyan-300 hover:border-cyan-800 transition-colors pointer-events-auto"
         >
           RESTORE UI
         </button>
